@@ -280,10 +280,7 @@ function renderCard(project, container) {
             iconHtml = '<i class="ri-close-line"></i>';
         }
 
-        const isFirstStage = index === 0;
-        const clickAction = isFirstStage
-            ? `openProjectInformationModal('${project.id}')`
-            : `openStageModal('${project.id}', '${stage.id}')`;
+        const clickAction = `openStageModal('${project.id}', '${stage.id}')`;
 
         stagesHTML += `
           <div class="stage-item ${statusClass}" onclick="${clickAction}">
