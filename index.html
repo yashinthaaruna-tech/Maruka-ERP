@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A comprehensive Project Monitor Web App to track stages of various projects.">
+  <title>Project Monitor Dashboard - APP UPDATED</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar / Nav Placeholder if needed, sticking to top navbar for simplicity -->
+    <header class="navbar glass-effect">
+      <div class="nav-brand">
+        <img src="image.png" alt="Maruka Technologies Logo" class="brand-logo" />
+        <h1>MARUKA TECHNOLOGIES PVT LTD</h1>
+      </div>
+      <div class="nav-actions">
+        <button id="viewAnalyticsBtn" class="btn btn-info" style="margin-right: 10px;">
+          <i class="ri-pie-chart-line"></i> Analytics
+        </button>
+        <button id="viewInquiriesBtn" class="btn btn-ghost" style="margin-right: 10px;">
+          <i class="ri-question-answer-line"></i> View Inquiries
+        </button>
+        <button id="viewCompletedBtn" class="btn btn-secondary" style="margin-right: 10px;">
+          <i class="ri-checkbox-multiple-line"></i> Completed
+        </button>
+        <button id="addProjectBtn" class="btn btn-primary">
+          <i class="ri-add-line"></i> New Project
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <header class="page-header">
+        <div>
+          <h2>Project Dashboard</h2>
+          <p class="subtitle">Track and manage project timelines across all stages.</p>
+        </div>
+
+        <div class="stats-overview">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="ri-folder-chart-line"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="totalProjectsStat">0</span>
+              <span class="stat-label">Active Projects</span>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon"><i class="ri-checkbox-circle-line"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="completedStat">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon"><i class="ri-money-dollar-circle-line"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="totalValueStat">0</span>
+              <span class="stat-label">Total Pipeline (LKR)</span>
+            </div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-icon"><i class="ri-line-chart-line"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="onTrackStat">0</span>
+              <span class="stat-label">On Track</span>
+            </div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-icon"><i class="ri-pie-chart-line"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="conversionRateStat">0%</span>
+              <span class="stat-label">Conv. Rate</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Projects Grid (Active) -->
+      <section id="projectsGrid" class="projects-grid">
+        <!-- Project Cards will be injected here by app.js -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon"><i class="ri-folder-open-line"></i></div>
+          <h3>No active projects</h3>
+          <p>Get started by creating your first project.</p>
+          <button class="btn btn-secondary mt-15" id="emptyAddBtn">Create Project</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal for Creating/Editing Projects -->
+  <div class="modal-overlay" id="projectModal">
+    <div class="modal glass-effect">
+      <header class="modal-header">
+        <h3 id="modalTitle">Create New Project</h3>
+        <button class="close-btn" id="closeModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <form id="projectForm" class="modal-body">
+        <input type="hidden" id="projectIdInput">
+        <div class="form-group">
+          <label for="projectName">Project Name</label>
+          <input type="text" id="projectName" placeholder="e.g. Acme Website Redesign" required>
+        </div>
+        <div class="form-group">
+          <label for="clientName">Client / Company</label>
+          <input type="text" id="clientName" placeholder="e.g. Acme Corp" required>
+        </div>
+        <div class="form-group">
+          <label>Expected Deadlines for Stages</label>
+          <div class="stage-deadlines-grid">
+            <div class="stage-deadline-input">
+              <label for="deadlineInquiry">1. Inquiry</label>
+              <input type="date" id="deadlineInquiry">
+            </div>
+            <div class="stage-deadline-input">
+              <label for="deadlineQuotation">2. Quotation</label>
+              <input type="date" id="deadlineQuotation">
+            </div>
+            <div class="stage-deadline-input">
+              <label for="deadlineDesign">3. Design & Drawing</label>
+              <input type="date" id="deadlineDesign">
+            </div>
+            <div class="stage-deadline-input">
+              <label for="deadlineProduction">4. Production</label>
+              <input type="date" id="deadlineProduction">
+            </div>
+            <div class="stage-deadline-input">
+              <label for="deadlineTesting">5. Testing</label>
+              <input type="date" id="deadlineTesting">
+            </div>
+            <div class="stage-deadline-input">
+              <label for="deadlineDelivery">6. Delivery</label>
+              <input type="date" id="deadlineDelivery">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="deadline">Final Delivery Deadline (Overall)</label>
+          <input type="date" id="deadline">
+        </div>
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Project</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for Updating Stages -->
+  <div class="modal-overlay" id="stageModal">
+    <div class="modal glass-effect">
+      <header class="modal-header">
+        <h3>Update Stage Status</h3>
+        <button class="close-btn" id="closeStageModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <div class="modal-body">
+        <p class="mb-15">Update the status for <strong id="stageNameDisplay"></strong> in project <strong
+            id="stageProjectDisplay"></strong>.</p>
+
+        <div class="stage-actions">
+          <button class="btn btn-outline" id="markPendingBtn">
+            <i class="ri-time-line"></i> Mark Pending
+          </button>
+          <button class="btn btn-success" id="markOnTimeBtn">
+            <i class="ri-check-double-line"></i> Finished (On Time)
+          </button>
+          <button class="btn btn-danger" id="markDelayedBtn">
+            <i class="ri-alarm-warning-line"></i> Finished (Delayed)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Inquiries -->
+  <div class="modal-overlay" id="inquiriesModal">
+    <div class="modal glass-effect" style="max-width: 1000px; width: 90%;">
+      <header class="modal-header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <h3>Inquiries</h3>
+          <button id="addInquiryBtn" class="btn btn-primary btn-sm">
+            <i class="ri-add-line"></i> New Inquiry
+          </button>
+        </div>
+        <button class="close-btn" id="closeInquiriesModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <div class="inquiries-list" id="inquiriesList">
+          <!-- Inquiries will be injected here -->
+          <div class="empty-state" id="inquiriesEmptyState">
+            <div class="empty-icon"><i class="ri-chat-4-line"></i></div>
+            <h3>No inquiries yet</h3>
+            <p>Track potential projects before they become active.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Add Inquiry -->
+  <div class="modal-overlay" id="addInquiryModal">
+    <div class="modal glass-effect">
+      <header class="modal-header">
+        <h3>Add New Inquiry</h3>
+        <button class="close-btn" id="closeAddInquiryModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <form id="inquiryForm" class="modal-body">
+        <div class="form-group">
+          <label for="inquiryDate">Inquiry Date</label>
+          <input type="date" id="inquiryDate" required>
+        </div>
+        <div class="form-group">
+          <label for="inquiryCompany">Company Name</label>
+          <input type="text" id="inquiryCompany" placeholder="e.g. Acme Industries" required>
+        </div>
+        <div class="form-group">
+          <label for="inquiryContactName">Contact Person Name</label>
+          <input type="text" id="inquiryContactName" placeholder="e.g. John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="inquiryContactNumber">Contact Number</label>
+          <input type="tel" id="inquiryContactNumber" placeholder="e.g. +1 123 456 7890" required>
+        </div>
+        <div class="form-group">
+          <label>Customer Requirement (PDF)</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="file" id="inquiryRequirementUpload" accept=".pdf" style="display: none;">
+            <button type="button" class="btn btn-outline btn-sm"
+              onclick="document.getElementById('inquiryRequirementUpload').click()">
+              <i class="ri-upload-cloud-line"></i> Upload PDF
+            </button>
+            <span id="inquiryRequirementFileName" class="file-name-display" style="color: white; font-size: 0.8rem;">No
+              file selected</span>
+            <a id="inquiryRequirementLink" href="#" target="_blank" class="btn btn-info btn-sm"
+              style="display: none;"><i class="ri-eye-line"></i> Show</a>
+          </div>
+          <input type="hidden" id="inquiryRequirementUrl">
+        </div>
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelInquiryModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Inquiry</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for Completed Projects -->
+  <div class="modal-overlay" id="completedModal">
+    <div class="modal glass-effect" style="max-width: 1000px; width: 90%;">
+      <header class="modal-header">
+        <h3>Completed Projects</h3>
+        <button class="close-btn" id="closeCompletedModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Projects Grid (Completed) -->
+        <section id="completedGrid" class="projects-grid"
+          style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));">
+          <!-- Completed Project Cards will be injected here by app.js -->
+          <div class="empty-state" id="completedEmptyState" style="grid-column: 1 / -1;">
+            <div class="empty-icon"><i class="ri-check-double-line"></i></div>
+            <h3>No completed projects</h3>
+            <p>Projects will appear here automatically once "Delivery" is marked as finished.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Project/Inquiry Information Details -->
+  <div class="modal-overlay" id="inquiryStageDetailModal">
+    <div class="modal glass-effect" style="max-width: 600px;">
+      <header class="modal-header">
+        <div>
+          <h3>Project Information</h3>
+          <h4 id="inquiryDetailProjectName"
+            style="color: var(--text-muted); font-size: 0.9rem; font-weight: 400; margin-top: 4px;">Project Name
+            Loading...</h4>
+        </div>
+        <button class="close-btn" id="closeInquiryStageDetailModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+        <div class="info-group mb-15">
+          <h4 style="color: var(--primary); margin-bottom: 10px;"><i class="ri-information-line"></i> Inquiry Source
+            Details</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+            <div><span class="text-muted">Date:</span> <span id="infoInquiryDate"></span></div>
+            <div><span class="text-muted">Company:</span> <span id="infoInquiryCompany"></span></div>
+            <div><span class="text-muted">Contact:</span> <span id="infoInquiryContact"></span></div>
+            <div><span class="text-muted">Phone:</span> <span id="infoInquiryPhone"></span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="projectValueInput">Project Value (LKR)</label>
+          <input type="number" id="projectValueInput" placeholder="e.g. 500000">
+        </div>
+
+        <div class="file-upload-section mb-15">
+          <label><i class="ri-file-user-line"></i> Customer Requirements (PDF)</label>
+          <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+            <span id="requirementFileName" class="file-name-display">No file available</span>
+            <a id="requirementFileLink" href="#" target="_blank" class="btn btn-info btn-sm" style="display: none;"><i
+                class="ri-eye-line"></i> Show</a>
+          </div>
+        </div>
+
+        <div class="file-upload-section mb-15">
+          <label><i class="ri-file-list-3-line"></i> Quotation Document (PDF)</label>
+          <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+            <input type="file" id="quotationFileUpload" accept=".pdf" style="display: none;">
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('quotationFileUpload').click()">
+              <i class="ri-upload-cloud-line"></i> Upload PDF
+            </button>
+            <span id="quotationFileName" class="file-name-display">No file</span>
+            <a id="quotationFileLink" href="#" target="_blank" class="btn btn-info btn-sm" style="display: none;"><i
+                class="ri-eye-line"></i> Show</a>
+          </div>
+        </div>
+
+        <div class="file-upload-section mb-15">
+          <label><i class="ri-ruler-line"></i> Design & Drawing Document (PDF)</label>
+          <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+            <input type="file" id="designFileUpload" accept=".pdf" style="display: none;">
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('designFileUpload').click()">
+              <i class="ri-upload-cloud-line"></i> Upload PDF
+            </button>
+            <span id="designFileName" class="file-name-display">No file</span>
+            <a id="designFileLink" href="#" target="_blank" class="btn btn-info btn-sm" style="display: none;"><i
+                class="ri-eye-line"></i> Show</a>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-outline btn-sm" id="approveInquiryBtn" title="Approve Inquiry">
+            <i class="ri-check-line"></i> Approve
+          </button>
+          <button class="btn btn-outline btn-sm" id="rejectInquiryBtn" title="Reject Inquiry">
+            <i class="ri-close-line"></i> Reject
+          </button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-ghost" id="cancelInquiryDetailBtn">Cancel</button>
+          <button class="btn btn-primary" id="saveInquiryDetailBtn">Save Changes</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal for Analytics/Pie Chart -->
+  <div class="modal-overlay" id="analyticsModal">
+    <div class="modal glass-effect">
+      <header class="modal-header">
+        <h3>Conversion Analytics</h3>
+        <button class="close-btn" id="closeAnalyticsModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <div class="modal-body">
+        <div class="chart-container" style="position: relative; height:300px; width:300px; margin: 0 auto;">
+          <canvas id="conversionChart"></canvas>
+        </div>
+        <div id="chartLegend" style="margin-top: 20px; text-align: center; color: white;">
+          <!-- Legend will be here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs (using compat libraries for vanilla JS without a bundler) -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="app.js?v=20260226_fixed"></script>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+C:\Users\yashi\AppData\Local\Programs\Python\Python312\Scripts\;C:\Users\yashi\AppData\Local\Programs\Python\Python312\;C:\Users\yashi\AppData\Local\Programs\Python\Launcher\;C:\Users\yashi\AppData\Local\Microsoft\WindowsApps;;C:\Users\yashi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\yashi\AppData\Local\Programs\Antigravity\bin;C:\Program Files\Git\cmd
