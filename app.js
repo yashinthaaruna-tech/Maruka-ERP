@@ -376,6 +376,9 @@ function renderInquiries() {
                 }
                 </div>
                 <div class="inquiry-actions">
+                    <button class="btn btn-info btn-sm" onclick="openViewInquiryModal('${inquiry.id}')">
+                        <i class="ri-eye-line"></i> View
+                    </button>
                     ${inquiry.converted
                     ? `<span class="converted-badge"><i class="ri-checkbox-circle-line"></i> Converted</span>`
                     : `<button class="btn btn-primary btn-sm" onclick="startConversion('${inquiry.id}')">
@@ -393,6 +396,42 @@ function renderInquiries() {
         console.error("Error in renderInquiries: ", globalError);
         alert("An error occurred while displaying inquiries. Please check the console.");
     }
+}
+
+function openViewInquiryModal(inquiryId) {
+    const inquiry = inquiries.find(i => i.id === inquiryId);
+    if (!inquiry) return;
+
+    // Populate modal fields
+    const modal = document.getElementById('viewInquiryModal');
+
+    document.getElementById('viewInquiryDate').textContent = inquiry.date
+        ? new Date(inquiry.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : 'N/A';
+    document.getElementById('viewInquiryCompany').textContent = inquiry.company || 'N/A';
+    document.getElementById('viewInquiryContact').textContent = inquiry.contactName || 'N/A';
+    document.getElementById('viewInquiryPhone').textContent = inquiry.contactNumber || 'N/A';
+
+    const statusEl = document.getElementById('viewInquiryStatus');
+    if (inquiry.converted) {
+        statusEl.textContent = 'Converted to Project';
+        statusEl.className = 'inquiry-status-badge status-converted';
+    } else {
+        statusEl.textContent = 'Pending';
+        statusEl.className = 'inquiry-status-badge status-pending';
+    }
+
+    const docSection = document.getElementById('viewInquiryDocSection');
+    const docLink = document.getElementById('viewInquiryDocLink');
+    if (inquiry.requirementUrl) {
+        docLink.href = inquiry.requirementUrl;
+        docLink.textContent = inquiry.requirementFileName || 'View Document';
+        docSection.style.display = 'block';
+    } else {
+        docSection.style.display = 'none';
+    }
+
+    modal.classList.add('active');
 }
 
 function startConversion(inquiryId) {
@@ -894,6 +933,14 @@ function setupEventListeners() {
         updateApprovalButtonsUI('delayed');
     });
 
+    // View Inquiry Modal close
+    const closeViewInquiryModalBtn = document.getElementById('closeViewInquiryModalBtn');
+    if (closeViewInquiryModalBtn) {
+        closeViewInquiryModalBtn.addEventListener('click', () => {
+            document.getElementById('viewInquiryModal').classList.remove('active');
+        });
+    }
+
     // Close modals on outside click
     window.addEventListener('click', (e) => {
         if (e.target === projectModal) closeProjectModal();
@@ -902,6 +949,8 @@ function setupEventListeners() {
         if (e.target === addInquiryModal) closeAddInquiryModal();
         if (e.target === analyticsModal) analyticsModal.classList.remove('active');
         if (e.target === inquiryStageDetailModal) inquiryStageDetailModal.classList.remove('active');
+        const viewInqModal = document.getElementById('viewInquiryModal');
+        if (e.target === viewInqModal) viewInqModal.classList.remove('active');
     });
 }
 
