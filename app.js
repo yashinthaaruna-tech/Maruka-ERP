@@ -3,6 +3,7 @@ const STAGES = [
     { id: 'inquiry', name: 'Inquiry', icon: 'ri-mail-send-line' },
     { id: 'quotation', name: 'Quotation', icon: 'ri-file-list-3-line' },
     { id: 'design', name: 'Design & Drawing', icon: 'ri-ruler-line' },
+    { id: 'purchasing', name: 'Purchasing', icon: 'ri-shopping-cart-2-line' },
     { id: 'production', name: 'Production', icon: 'ri-tools-line' },
     { id: 'testing', name: 'Testing', icon: 'ri-test-tube-line' },
     { id: 'delivery', name: 'Delivery', icon: 'ri-truck-line' }
@@ -264,20 +265,33 @@ function renderCard(project, container) {
     STAGES.forEach((stage, index) => {
         const status = project.stages[stage.id] || 'pending'; // pending, ontime, delayed
         const stageDeadline = project.stageDeadlines ? project.stageDeadlines[stage.id] : '';
-        const formattedStageDate = stageDeadline ? new Date(stageDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date';
+        const formattedStageDate = stageDeadline ? new Date(stageDeadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date';
 
         let statusClass = 'pending';
         let statusText = 'Pending';
         let iconHtml = `<i class="${stage.icon}"></i>`;
 
         if (status === 'ontime') {
+            // Manually marked done → GREEN
             statusClass = 'green';
-            statusText = 'On Time';
+            statusText = 'Done ✓';
             iconHtml = '<i class="ri-check-line"></i>';
         } else if (status === 'delayed') {
+            // Manually marked delayed → RED
             statusClass = 'red';
             statusText = 'Delayed';
             iconHtml = '<i class="ri-close-line"></i>';
+        } else if (status === 'pending' && stageDeadline) {
+            // Auto-red ONLY if due date has strictly passed (next day onwards)
+            const deadlineDay = new Date(stageDeadline + 'T00:00:00');
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
+            if (deadlineDay < todayStart) {
+                statusClass = 'red';
+                statusText = 'Overdue!';
+                iconHtml = '<i class="ri-alarm-warning-line"></i>';
+            }
+            // else: stays grey/pending — user must manually mark done
         }
 
         const clickAction = `openStageModal('${project.id}', '${stage.id}')`;
@@ -290,7 +304,7 @@ function renderCard(project, container) {
             <div class="stage-info">
               <div style="display: flex; flex-direction: column;">
                 <span class="stage-name">${index + 1}. ${stage.name}</span>
-                <span style="font-size: 0.75rem; opacity: 0.7; margin-top: 2px;"><i class="ri-calendar-todo-line"></i> ${formattedStageDate}</span>
+                <span class="stage-due-date"><i class="ri-calendar-todo-line"></i> ${formattedStageDate}</span>
               </div>
               <span class="stage-status-text">${statusText}</span>
             </div>
@@ -637,12 +651,40 @@ function updateApprovalButtonsUI(status) {
     rejectInquiryBtn.classList.remove('btn-danger');
     rejectInquiryBtn.classList.add('btn-outline');
 
+    // Show/hide the approve+reject button group
+    const approveRejectGroup = document.getElementById('approveRejectGroup');
+
+    // Update approval status badge in modal header
+    let badge = document.getElementById('approvalStatusBadge');
+    if (!badge) {
+        badge = document.createElement('span');
+        badge.id = 'approvalStatusBadge';
+        badge.style.cssText = 'display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px; font-size:0.82rem; font-weight:700; letter-spacing:0.5px; margin-top:6px;';
+        const headerDiv = document.querySelector('#inquiryStageDetailModal .modal-header > div');
+        if (headerDiv) headerDiv.appendChild(badge);
+    }
+
     if (status === 'ontime') {
-        approveInquiryBtn.classList.remove('btn-outline');
-        approveInquiryBtn.classList.add('btn-success');
+        // APPROVED: hide approve/reject buttons — only show badge
+        if (approveRejectGroup) approveRejectGroup.style.display = 'none';
+        badge.innerHTML = '<i class="ri-checkbox-circle-fill"></i> APPROVED';
+        badge.style.background = 'rgba(16, 185, 129, 0.15)';
+        badge.style.color = '#10b981';
+        badge.style.border = '1px solid rgba(16, 185, 129, 0.4)';
     } else if (status === 'delayed') {
+        if (approveRejectGroup) approveRejectGroup.style.display = 'flex';
         rejectInquiryBtn.classList.remove('btn-outline');
         rejectInquiryBtn.classList.add('btn-danger');
+        badge.innerHTML = '<i class="ri-close-circle-fill"></i> REJECTED';
+        badge.style.background = 'rgba(239, 68, 68, 0.15)';
+        badge.style.color = '#ef4444';
+        badge.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+    } else {
+        if (approveRejectGroup) approveRejectGroup.style.display = 'flex';
+        badge.innerHTML = '<i class="ri-time-line"></i> PENDING REVIEW';
+        badge.style.background = 'rgba(148, 163, 184, 0.1)';
+        badge.style.color = '#94a3b8';
+        badge.style.border = '1px solid rgba(148, 163, 184, 0.2)';
     }
 }
 
@@ -664,6 +706,7 @@ function handleProjectSubmit(e) {
     const deadlineInquiry = document.getElementById('deadlineInquiry').value;
     const deadlineQuotation = document.getElementById('deadlineQuotation').value;
     const deadlineDesign = document.getElementById('deadlineDesign').value;
+    const deadlinePurchasing = document.getElementById('deadlinePurchasing').value;
     const deadlineProduction = document.getElementById('deadlineProduction').value;
     const deadlineTesting = document.getElementById('deadlineTesting').value;
     const deadlineDelivery = document.getElementById('deadlineDelivery').value;
@@ -672,6 +715,7 @@ function handleProjectSubmit(e) {
         inquiry: deadlineInquiry,
         quotation: deadlineQuotation,
         design: deadlineDesign,
+        purchasing: deadlinePurchasing,
         production: deadlineProduction,
         testing: deadlineTesting,
         delivery: deadlineDelivery
@@ -697,6 +741,7 @@ function handleProjectSubmit(e) {
             inquiry: 'pending',
             quotation: 'pending',
             design: 'pending',
+            purchasing: 'pending',
             production: 'pending',
             testing: 'pending',
             delivery: 'pending'
