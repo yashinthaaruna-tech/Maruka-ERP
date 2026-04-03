@@ -136,15 +136,19 @@
               <input type="date" id="deadlineDesign">
             </div>
             <div class="stage-deadline-input">
-              <label for="deadlineProduction">4. Production</label>
+              <label for="deadlinePurchasing">4. Purchasing</label>
+              <input type="date" id="deadlinePurchasing">
+            </div>
+            <div class="stage-deadline-input">
+              <label for="deadlineProduction">5. Production</label>
               <input type="date" id="deadlineProduction">
             </div>
             <div class="stage-deadline-input">
-              <label for="deadlineTesting">5. Testing</label>
+              <label for="deadlineTesting">6. Testing</label>
               <input type="date" id="deadlineTesting">
             </div>
             <div class="stage-deadline-input">
-              <label for="deadlineDelivery">6. Delivery</label>
+              <label for="deadlineDelivery">7. Delivery</label>
               <input type="date" id="deadlineDelivery">
             </div>
           </div>
@@ -346,7 +350,7 @@
         </div>
       </div>
       <footer class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; gap: 8px;">
+        <div id="approveRejectGroup" style="display: flex; gap: 8px;">
           <button class="btn btn-outline btn-sm" id="approveInquiryBtn" title="Approve Inquiry">
             <i class="ri-check-line"></i> Approve
           </button>
@@ -377,6 +381,61 @@
           <!-- Legend will be here -->
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal for Viewing Inquiry Details -->
+  <div class="modal-overlay" id="viewInquiryModal">
+    <div class="modal glass-effect" style="max-width: 520px; width: 90%;">
+      <header class="modal-header">
+        <div>
+          <h3><i class="ri-eye-line" style="color: var(--primary);"></i> Inquiry Details</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 3px;">Full inquiry information</p>
+        </div>
+        <button class="close-btn" id="closeViewInquiryModalBtn"><i class="ri-close-line"></i></button>
+      </header>
+      <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+
+        <!-- Status Badge -->
+        <div style="margin-bottom: 18px; display: flex; align-items: center; gap: 10px;">
+          <span id="viewInquiryStatus" class="inquiry-status-badge status-pending">Pending</span>
+        </div>
+
+        <!-- Info Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+          <div class="view-inquiry-field">
+            <span class="view-field-label"><i class="ri-calendar-event-line"></i> Inquiry Date</span>
+            <span class="view-field-value" id="viewInquiryDate">—</span>
+          </div>
+          <div class="view-inquiry-field">
+            <span class="view-field-label"><i class="ri-building-line"></i> Company</span>
+            <span class="view-field-value" id="viewInquiryCompany">—</span>
+          </div>
+          <div class="view-inquiry-field">
+            <span class="view-field-label"><i class="ri-user-line"></i> Contact Person</span>
+            <span class="view-field-value" id="viewInquiryContact">—</span>
+          </div>
+          <div class="view-inquiry-field">
+            <span class="view-field-label"><i class="ri-phone-line"></i> Contact Number</span>
+            <span class="view-field-value" id="viewInquiryPhone">—</span>
+          </div>
+        </div>
+
+        <!-- Document Section -->
+        <div id="viewInquiryDocSection" class="file-upload-section mb-15" style="display: none;">
+          <label><i class="ri-file-user-line"></i> Customer Requirement Document</label>
+          <div style="margin-top: 8px;">
+            <a id="viewInquiryDocLink" href="#" target="_blank" class="btn btn-outline btn-sm">
+              <i class="ri-eye-line"></i> <span>View Document</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+      <footer class="modal-footer" style="justify-content: flex-end;">
+        <button class="btn btn-ghost" id="closeViewInquiryModalBtn2"
+          onclick="document.getElementById('viewInquiryModal').classList.remove('active')">Close</button>
+      </footer>
     </div>
   </div>
 
